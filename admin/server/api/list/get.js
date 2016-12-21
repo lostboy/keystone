@@ -30,6 +30,17 @@ module.exports = function (req, res) {
 		assign(where, req.list.addSearchToQuery(req.query.search));
 	}
 	var query = req.list.model.find(where);
+	if (req.query.search && !req.query.sort) {
+		query = req.list.model.find(where, {
+			score: {
+				$meta: "textScore",
+			},
+		}).sort({
+			score: {
+				$meta: "textScore",
+			},
+		});
+	}
 	if (req.query.populate) {
 		query.populate(req.query.populate);
 	}
